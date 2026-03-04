@@ -25,6 +25,7 @@ export function frontendEslintConfig() {
     eslintPluginPrettierRecommended,
     {
       rules: {
+        'react-hooks/set-state-in-effect': 'off',
         'prettier/prettier': [
           'error',
           {
