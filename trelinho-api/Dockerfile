@@ -1,13 +1,16 @@
 FROM node:20
 
-WORKDIR /app
+WORKDIR /app/trelinho-api
 
-COPY package.json pnpm-lock.yaml ./
+COPY trelinho-config /app/trelinho-config
+COPY trelinho-api/package.json trelinho-api/pnpm-lock.yaml ./
 
 RUN npm install -g pnpm
 RUN pnpm install
 
-COPY . .
+COPY trelinho-api .
+
+RUN pnpm prisma generate
 
 EXPOSE 3000
 

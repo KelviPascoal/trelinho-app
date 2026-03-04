@@ -1,13 +1,14 @@
 FROM node:20-alpine
 
-WORKDIR /app
+WORKDIR /app/trelinho-client
 
-COPY package.json pnpm-lock.yaml ./
+COPY trelinho-config /app/trelinho-config
+COPY trelinho-client/package.json trelinho-client/pnpm-lock.yaml ./
 
 RUN npm install -g pnpm
 RUN pnpm install
 
-COPY . .
+COPY trelinho-client .
 
 EXPOSE 5173
 

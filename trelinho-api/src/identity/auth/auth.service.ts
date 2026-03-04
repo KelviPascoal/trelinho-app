@@ -4,8 +4,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { Pool } from 'pg';
 
 export type RegisterPayload = {
   name: string;
@@ -20,9 +22,18 @@ export type LoginPayload = {
 
 @Injectable()
 export class AuthService {
-  private readonly prisma = new PrismaClient();
+  private readonly prisma: PrismaClient;
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(private readonly jwtService: JwtService) {
+    const connectionString = process.env.DATABASE_URL;
+
+    if (!connectionString) {
+      throw new Error('DATABASE_URL is not set');
+    }
+
+    const adapter = new PrismaPg(new Pool({ connectionString }));
+    this.prisma = new PrismaClient({ adapter });
+  }
 
   async register(payload: RegisterPayload) {
     const name = payload.name?.trim();
