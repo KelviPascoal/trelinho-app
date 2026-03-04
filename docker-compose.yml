@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: trelinho_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: trelinho_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  trelinho-api:
+    build: ./trelinho-api
+    container_name: trelinho_api
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/trelinho_db
+
+  trelinho-client:
+    build: ./trelinho-client
+    container_name: trelinho_client
+    restart: always
+    depends_on:
+      - trelinho-api
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://trelinho-api:3000
+
+volumes:
+  postgres_data:
